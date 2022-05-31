@@ -1,0 +1,43 @@
+{
+  "name": "20210813-577-1-published",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "main": "src/index.tsx",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "downloads-folder": "^3.0.3",
+    "js-file-download": "^0.4.12",
+    "lodash": "^4.17.21",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-redux": "^8.0.2",
+    "react-router-dom": "^6.3.0",
+    "react-scripts": "4.0.0",
+    "react-webcam": "^7.0.1",
+    "redux": "^4.2.0",
+    "redux-devtools-extension": "^2.13.9",
+    "redux-persist": "^6.0.0",
+    "redux-state-sync": "^3.1.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.9",
+    "@types/react-dom": "17.0.0",
+    "@types/redux": "^3.6.0",
+    "@types/redux-state-sync": "^3.1.3",
+    "@types/webpack-env": "^1.17.0",
+    "typescript": "4.1.3"
+  },
+  "scripts": {
+    "start": "rm -rf tsconfig.json && react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}

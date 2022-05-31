@@ -1,0 +1,15 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+body{
+  margin: 0 !important;
+  overflow: hidden;
+}
+
+video{
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+}
