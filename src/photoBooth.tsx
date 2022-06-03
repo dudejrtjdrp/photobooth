@@ -80,7 +80,7 @@ export const PhotoBooth = () => {
     formData.append("file", blobFile);
     await axios({
       method: "post",
-      url: "https://204.236.180.208:5000/fileUpload",
+      url: "http://204.236.180.208:5000/fileUpload",
       data: formData,
       headers: {
         "Content-Type": "multipart/form-data",

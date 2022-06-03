@@ -22,7 +22,7 @@ export const Gallery = () => {
 
   useEffect(() => {
     axios
-    .get("https://204.236.180.208:5000/fileUpload")
+    .get("http://204.236.180.208:5000/fileUpload")
     .then((Response) => {
       console.log(Response.data);
       setResponseArray(Response.data.result.reverse());
