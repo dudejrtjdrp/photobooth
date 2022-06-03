@@ -5,8 +5,13 @@
 
 body{
   margin: 0 !important;
-  overflow: hidden;
 }
+
+body::-webkit-scrollbar {
+  width: 10px;
+  background-color: black;
+}
+
 
 video{
   width: 100vw;

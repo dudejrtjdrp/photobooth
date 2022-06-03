@@ -14,6 +14,7 @@ import { composeWithDevTools } from "redux-devtools-extension";
 import { Provider } from "react-redux";
 import rootReducer from "./modules/index";
 import { useSelector } from "react-redux";
+import axios from "axios";
 
 const videoConstraints = {
   width: 720,
@@ -23,7 +24,7 @@ const videoConstraints = {
 
 const downloadsFolder = require("downloads-folder");
 
-const fileDownload = require('js-file-download');
+const fileDownload = require("js-file-download");
 
 export const PhotoBooth = () => {
   const [windowWidth, setWindowWidth] = useState(0);
@@ -49,6 +50,13 @@ export const PhotoBooth = () => {
   const onIncrease = () => dispatch(plusCounter(1));
   const count = useSelector((state: any) => state);
 
+  function blobToFile(theBlob: any, fileName: any) {
+    return new File([theBlob], fileName, {
+      lastModified: new Date().getTime(),
+      type: theBlob.type,
+    });
+  }
+
   async function downloadImage(imageSrc: RequestInfo) {
     const image = await fetch(imageSrc);
     const imageBlog = await image.blob();
@@ -59,21 +67,40 @@ export const PhotoBooth = () => {
       setLocalCount(localStorage.getItem("localCount"));
       console.log(localStorage.getItem("localCount"));
     }
+    const blobFile = blobToFile(
+      imageBlog,
+      "photobooth" + localStorage.getItem("localCount") + ".jpg"
+    );
     console.log(localStorage.getItem("localCount"));
     console.log(localCount);
-    const imageURL = URL.createObjectURL(imageBlog);
-    const link = document.createElement("a");
-    link.href = imageURL;
-    link.download = "photobooth" + localStorage.getItem("localCount");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    console.log(image);
+    console.log(imageBlog);
+    console.log(blobFile);
+    const formData = new FormData();
+    formData.append("file", blobFile);
+    await axios({
+      method: "post",
+      url: "http://204.236.180.208:5000/fileUpload",
+      data: formData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    // const imageURL = URL.createObjectURL(imageBlog);
+    // const link = document.createElement("a");
+    // link.href = imageURL;
+    // link.download = "photobooth" + localStorage.getItem("localCount");
+    // document.body.appendChild(link);
+    // link.click();
+    // document.body.removeChild(link);
     setLocalCount((Number(localStorage.getItem("localCount")) + 1).toString());
     localStorage.setItem(
       "localCount",
       (Number(localStorage.getItem("localCount")) + 1).toString()
     );
-    console.log((Number(localStorage.getItem("localCount")) + 1).toString());
+    localStorage.setItem("isNew", "True");
+    // console.log((Number(localStorage.getItem("localCount")) + 1).toString());
   }
 
   const [isCaptureEnable, setCaptureEnable] = useState<boolean>(false);
@@ -84,8 +111,6 @@ export const PhotoBooth = () => {
     const imageSrc = webcamRef.current?.getScreenshot();
     if (imageSrc) {
       setUrl(imageSrc);
-      console.log(imageSrc);
-      console.log(window.outerWidth, window.outerHeight);
       downloadImage(imageSrc);
     }
   }, [webcamRef]);
@@ -93,8 +118,9 @@ export const PhotoBooth = () => {
   const consoleLog = (e: any) => {
     if (e.code === "Enter") {
       e.preventDefault();
-      console.log(e);
       capture();
+      console.log(e);
+      // capture();
     }
   };
 
@@ -105,7 +131,7 @@ export const PhotoBooth = () => {
         {count.counter}
       </header> */}
       <>
-        <div onKeyDown={consoleLog} tabIndex={0}>
+        <div style={{ overflow: "hidden", width:"100vw", height:"100vh" }} onKeyDown={consoleLog} tabIndex={0}>
           <Webcam
             mirrored={true}
             audio={false}

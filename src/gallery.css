@@ -1,0 +1,33 @@
+.image-grid img {
+    width: calc(25% - 12px);
+    height: 240px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    margin: 6px 6px;
+    cursor: pointer;
+}
+
+.image-grid img:hover {
+    transform: scale(1.01);
+    transition: .2s;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+
+.image-grid {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+
+@media screen and (max-width: 400px) {
+    .image-grid {
+        flex-direction: column;
+        flex-wrap: noWrap;
+    }
+
+    .image-grid div {
+        width: 100%;
+    }
+}

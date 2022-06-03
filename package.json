@@ -1,4 +1,5 @@
 {
+  "homepage": "https://photobooth.newmedia.io",
   "name": "20210813-577-1-published",
   "version": "1.0.0",
   "description": "",
@@ -7,6 +8,8 @@
   "dependencies": {
     "axios": "^0.27.2",
     "downloads-folder": "^3.0.3",
+    "gh-pages": "4.0.0",
+    "jquery": "^3.6.0",
     "js-file-download": "^0.4.12",
     "lodash": "^4.17.21",
     "react": "^17.0.2",
@@ -21,6 +24,7 @@
     "redux-state-sync": "^3.1.2"
   },
   "devDependencies": {
+    "@types/jquery": "^3.5.14",
     "@types/react": "^18.0.9",
     "@types/react-dom": "17.0.0",
     "@types/redux": "^3.6.0",
@@ -30,9 +34,11 @@
   },
   "scripts": {
     "start": "rm -rf tsconfig.json && react-scripts start",
-    "build": "react-scripts build",
+    "build": "rm -rf tsconfig.json && react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "rm -rf tsconfig.json && npm run build",
+    "deploy": "rm -rf tsconfig.json && gh-pages -d build"
   },
   "browserslist": [
     ">0.2%",
