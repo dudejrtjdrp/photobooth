@@ -31,7 +31,7 @@ export const Gallery = () => {
     .catch((Error) => {
       console.log(Error);
     });
-  });
+  },[]);
 
   const count = useSelector((state: any) => state.counter);
 
