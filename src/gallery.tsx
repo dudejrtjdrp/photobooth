@@ -59,7 +59,7 @@ export const Gallery = () => {
         localStorage.setItem("isNew", "False");
 
         axios
-          .get("http://localhost:5000/fileUpload")
+          .get("http://ec2-54-177-242-4.us-west-1.compute.amazonaws.com:5000/api/fileUpload")
           .then((Response) => {
             console.log(Response.data);
             setResponseArray(Response.data.result.reverse());
