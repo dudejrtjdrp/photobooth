@@ -69,7 +69,7 @@ export const Gallery = () => {
             console.log(Error);
           });
       }
-    }, 1000);
+    }, 600);
   }, []);
 
   function importAll(r: any) {

@@ -15,6 +15,7 @@ import { Provider } from "react-redux";
 import rootReducer from "./modules/index";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import ReactLoading from "react-loading";
 
 const videoConstraints = {
   width: 720,
@@ -32,10 +33,10 @@ export const PhotoBooth = () => {
   const [localCount, setLocalCount] = useState<any | null>("0");
 
   useEffect(() => {
-    if (localStorage.getItem("localCount") == null){
+    if (localStorage.getItem("localCount") == null) {
       localStorage.setItem("localCount", "0");
     }
-  },[]);
+  }, []);
 
   useEffect(() => {
     window.addEventListener("resize", (e) => {
@@ -122,7 +123,7 @@ export const PhotoBooth = () => {
   }, [webcamRef]);
 
   const consoleLog = (e: any) => {
-    if (e.code === "Enter") {
+    if (e.code === "Enter" && localStorage.getItem("isNew") === "False") {
       e.preventDefault();
       capture();
       console.log(e);
@@ -137,7 +138,11 @@ export const PhotoBooth = () => {
         {count.counter}
       </header> */}
       <>
-        <div style={{ overflow: "hidden", width:"100vw", height:"100vh" }} onKeyDown={consoleLog} tabIndex={0}>
+        <div
+          style={{ overflow: "hidden", width: "100vw", height: "100vh" }}
+          onKeyDown={consoleLog}
+          tabIndex={0}
+        >
           <Webcam
             mirrored={true}
             audio={false}
@@ -151,22 +156,13 @@ export const PhotoBooth = () => {
         {/* <button onClick={capture}>사진 촬영</button> */}
       </>
 
-      {/* {url && (
+      {localStorage.getItem("isNew") === "True" && (
         <>
           <div>
-            <button
-              onClick={() => {
-                setUrl(null);
-              }}
-            >
-              다시 찍기
-            </button>
-          </div>
-          <div>
-            <img src={url} alt="Screenshot" />
+            <ReactLoading type="spin" color="#fff" />
           </div>
         </>
-      )} */}
+      )}
     </>
   );
 };
