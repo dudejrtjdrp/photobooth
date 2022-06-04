@@ -26,7 +26,7 @@ export const Gallery = () => {
     .then((Response) => {
       console.log(Response.data);
       setResponseArray(Response.data.result.reverse());
-      setPhotoCount(Response.data.result.length)
+      setPhotoCount(Response.data.count)
     })
     .catch((Error) => {
       console.log(Error);
@@ -63,7 +63,7 @@ export const Gallery = () => {
           .then((Response) => {
             console.log(Response.data);
             setResponseArray(Response.data.result.reverse());
-            setPhotoCount(Response.data.result.length)
+            setPhotoCount(Response.data.count)
           })
           .catch((Error) => {
             console.log(Error);

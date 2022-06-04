@@ -31,6 +31,7 @@ export const PhotoBooth = () => {
   const [windowWidth, setWindowWidth] = useState(0);
   const [windowHeight, setWindowHeight] = useState(0);
   const [localCount, setLocalCount] = useState<any | null>("0");
+  const [photoCount, setPhotoCount] = useState<any | null>(0);
 
   useEffect(() => {
     if (localStorage.getItem("localCount") == null) {
@@ -77,9 +78,18 @@ export const PhotoBooth = () => {
       setLocalCount(localStorage.getItem("localCount"));
       console.log(localStorage.getItem("localCount"));
     }
+    axios
+    .get("http://ec2-54-177-242-4.us-west-1.compute.amazonaws.com:5000/api/fileUpload")
+    .then((Response) => {
+      console.log(Response.data);
+      setPhotoCount(Response.data.count)
+    })
+    .catch((Error) => {
+      console.log(Error);
+    });
     const blobFile = blobToFile(
       imageBlog,
-      "photobooth" + localStorage.getItem("localCount") + ".jpg"
+      "photobooth" + photoCount + ".jpg"
     );
     console.log(localStorage.getItem("localCount"));
     console.log(localCount);
@@ -125,21 +135,20 @@ export const PhotoBooth = () => {
     }
   }, [webcamRef]);
 
-  const consoleLog = (e: any) => {
-    if (e.code === "Enter" && localStorage.getItem("isNew") === "False") {
-      e.preventDefault();
-      capture();
-      console.log(e);
-      // capture();
-    }
-  };
+  // const consoleLog = (e: any) => {
+  //   if (e.code === "Enter" && localStorage.getItem("isNew") === "False") {
+  //     e.preventDefault();
+  //     capture();
+  //     console.log(e);
+  //     // capture();
+  //   }
+  // };
 
   useEffect(() => {
     const keyDownHandler = (event:any) => {
       console.log('User pressed: ', event.key);
 
       if (event.key === 'Enter' && localStorage.getItem("isNew") === "False") {
-        event.preventDefault();
         event.preventDefault();
         capture();
         console.log(event);
