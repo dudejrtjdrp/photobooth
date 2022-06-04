@@ -78,7 +78,7 @@ export const PhotoBooth = () => {
       setLocalCount(localStorage.getItem("localCount"));
       console.log(localStorage.getItem("localCount"));
     }
-    axios
+    await axios
     .get("http://ec2-54-177-242-4.us-west-1.compute.amazonaws.com:5000/api/fileUpload")
     .then((Response) => {
       console.log(Response.data);
