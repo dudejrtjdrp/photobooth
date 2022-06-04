@@ -1,10 +1,10 @@
 import {
   useRef,
-  useState,
   useCallback,
   useEffect,
   useLayoutEffect,
 } from "react";
+import useState from "react-usestateref";
 import Webcam from "react-webcam";
 import "./styles.css";
 import { useDispatch } from "react-redux";
@@ -17,28 +17,24 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import ReactLoading from "react-loading";
 
+import "./photoBooth.css";
+
 const videoConstraints = {
   width: 720,
   height: 360,
   facingMode: "user",
 };
 
-const downloadsFolder = require("downloads-folder");
-
-const fileDownload = require("js-file-download");
-
 export const PhotoBooth = () => {
   const [windowWidth, setWindowWidth] = useState(0);
   const [windowHeight, setWindowHeight] = useState(0);
-  const [localCount, setLocalCount] = useState<any | null>("0");
-  const [photoCount, setPhotoCount] = useState<any | null>(0);
+  const [isLoading, setIsLoading, isLoadingRef] = useState(false);
+  const [photoCount, setPhotoCount, photoCountRef] = useState<any | null>(0);
 
   useEffect(() => {
-    if (localStorage.getItem("localCount") == null) {
-      localStorage.setItem("localCount", "0");
-    }
     if (localStorage.getItem("isNew") == null) {
       localStorage.setItem("isNew", "False");
+      setIsLoading(false);
     }
   }, []);
 
@@ -56,11 +52,6 @@ export const PhotoBooth = () => {
     });
   }, [window.outerHeight]);
 
-  const dispatch = useDispatch();
-
-  const onIncrease = () => dispatch(plusCounter(1));
-  const count = useSelector((state: any) => state);
-
   function blobToFile(theBlob: any, fileName: any) {
     return new File([theBlob], fileName, {
       lastModified: new Date().getTime(),
@@ -71,31 +62,18 @@ export const PhotoBooth = () => {
   async function downloadImage(imageSrc: RequestInfo) {
     const image = await fetch(imageSrc);
     const imageBlog = await image.blob();
-    if (localStorage.getItem("localCount") === "0") {
-      setLocalCount("0");
-      localStorage.setItem("localCount", "0");
-    } else {
-      setLocalCount(localStorage.getItem("localCount"));
-      console.log(localStorage.getItem("localCount"));
-    }
     await axios
-    .get("http://ec2-54-177-242-4.us-west-1.compute.amazonaws.com:5000/api/fileUpload")
-    .then((Response) => {
-      console.log(Response.data);
-      setPhotoCount(Response.data.count)
-    })
-    .catch((Error) => {
-      console.log(Error);
-    });
-    const blobFile = blobToFile(
-      imageBlog,
-      "photobooth" + photoCount + ".jpg"
-    );
-    console.log(localStorage.getItem("localCount"));
-    console.log(localCount);
-    console.log(image);
-    console.log(imageBlog);
-    console.log(blobFile);
+      .get(
+        "http://ec2-54-177-242-4.us-west-1.compute.amazonaws.com:5000/api/fileUpload"
+      )
+      .then((Response) => {
+        console.log(Response.data);
+        setPhotoCount(Response.data.count);
+      })
+      .catch((Error) => {
+        console.log(Error);
+      });
+    const blobFile = blobToFile(imageBlog, "photobooth" + (photoCountRef.current + 1) + ".jpg");
     const formData = new FormData();
     formData.append("file", blobFile);
     await axios({
@@ -105,6 +83,11 @@ export const PhotoBooth = () => {
       headers: {
         "Content-Type": "multipart/form-data",
       },
+    }).then((Response) => {
+      console.log(Response.data);
+
+      localStorage.setItem("isNew", "False");
+      setIsLoading(false);
     });
 
     // const imageURL = URL.createObjectURL(imageBlog);
@@ -114,12 +97,6 @@ export const PhotoBooth = () => {
     // document.body.appendChild(link);
     // link.click();
     // document.body.removeChild(link);
-    setLocalCount((Number(localStorage.getItem("localCount")) + 1).toString());
-    localStorage.setItem(
-      "localCount",
-      (Number(localStorage.getItem("localCount")) + 1).toString()
-    );
-    localStorage.setItem("isNew", "True");
     // console.log((Number(localStorage.getItem("localCount")) + 1).toString());
   }
 
@@ -143,22 +120,26 @@ export const PhotoBooth = () => {
   //     // capture();
   //   }
   // };
-
+  
   useEffect(() => {
-    const keyDownHandler = (event:any) => {
-      console.log('User pressed: ', event.key);
-
-      if (event.key === 'Enter' && localStorage.getItem("isNew") === "False") {
-        event.preventDefault();
-        capture();
-        console.log(event);
+    const keyDownHandler = (event: any) => {
+      if (event.key === "Enter") {
+        if (isLoadingRef.current == true) {
+          const newBoolean = true
+          event.preventDefault();
+        } else if (isLoadingRef.current === false) {
+          const newBoolean = true
+          setIsLoading(true);
+          localStorage.setItem("isNew", "True");
+          capture();
+        }
       }
     };
 
-    document.addEventListener('keydown', keyDownHandler);
+    document.addEventListener("keydown", keyDownHandler);
 
     return () => {
-      document.removeEventListener('keydown', keyDownHandler);
+      document.removeEventListener("keydown", keyDownHandler);
     };
   }, []);
 
@@ -169,6 +150,15 @@ export const PhotoBooth = () => {
         {count.counter}
       </header> */}
       <>
+        {isLoading && (
+          <>
+            <div className="loading">
+              <ReactLoading className="loadingBar" type="spin" color="#fff" />
+              asd
+            </div>
+          </>
+        )}
+
         <div
           style={{ overflow: "hidden", width: "100vw", height: "100vh" }}
           // onKeyDown={consoleLog}
@@ -184,16 +174,7 @@ export const PhotoBooth = () => {
             videoConstraints={videoConstraints}
           />
         </div>
-        {/* <button onClick={capture}>사진 촬영</button> */}
       </>
-
-      {localStorage.getItem("isNew") === "True" && (
-        <>
-          <div>
-            <ReactLoading type="spin" color="#fff" />
-          </div>
-        </>
-      )}
     </>
   );
 };
