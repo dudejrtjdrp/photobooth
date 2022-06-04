@@ -32,6 +32,12 @@ export const PhotoBooth = () => {
   const [localCount, setLocalCount] = useState<any | null>("0");
 
   useEffect(() => {
+    if (localStorage.getItem("localCount") == null){
+      localStorage.setItem("localCount", "0");
+    }
+  },[]);
+
+  useEffect(() => {
     window.addEventListener("resize", (e) => {
       // console.log(window.outerWidth)
       setWindowWidth(window.outerWidth);
