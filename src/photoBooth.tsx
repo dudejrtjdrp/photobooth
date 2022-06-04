@@ -131,6 +131,24 @@ export const PhotoBooth = () => {
     }
   };
 
+  useEffect(() => {
+    const keyDownHandler = (event:any) => {
+      console.log('User pressed: ', event.key);
+
+      if (event.key === 'Enter') {
+        event.preventDefault();
+
+        // 👇️ your logic here
+      }
+    };
+
+    document.addEventListener('keydown', keyDownHandler);
+
+    return () => {
+      document.removeEventListener('keydown', keyDownHandler);
+    };
+  }, []);
+
   return (
     <>
       {/* <header>
