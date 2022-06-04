@@ -36,6 +36,9 @@ export const PhotoBooth = () => {
     if (localStorage.getItem("localCount") == null) {
       localStorage.setItem("localCount", "0");
     }
+    if (localStorage.getItem("isNew") == null) {
+      localStorage.setItem("isNew", "False");
+    }
   }, []);
 
   useEffect(() => {
@@ -135,10 +138,11 @@ export const PhotoBooth = () => {
     const keyDownHandler = (event:any) => {
       console.log('User pressed: ', event.key);
 
-      if (event.key === 'Enter') {
+      if (event.key === 'Enter' && localStorage.getItem("isNew") === "False") {
         event.preventDefault();
-
-        // 👇️ your logic here
+        event.preventDefault();
+        capture();
+        console.log(event);
       }
     };
 
@@ -158,8 +162,8 @@ export const PhotoBooth = () => {
       <>
         <div
           style={{ overflow: "hidden", width: "100vw", height: "100vh" }}
-          onKeyDown={consoleLog}
-          tabIndex={0}
+          // onKeyDown={consoleLog}
+          // tabIndex={0}
         >
           <Webcam
             mirrored={true}
