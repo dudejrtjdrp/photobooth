@@ -1,9 +1,4 @@
-import {
-  useRef,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-} from "react";
+import { useRef, useCallback, useEffect, useLayoutEffect } from "react";
 import useState from "react-usestateref";
 import Webcam from "react-webcam";
 import "./styles.css";
@@ -36,6 +31,17 @@ export const PhotoBooth = () => {
       localStorage.setItem("isNew", "False");
       setIsLoading(false);
     }
+    axios
+      .get(
+        "http://ec2-54-177-242-4.us-west-1.compute.amazonaws.com:5000/api/fileUpload"
+      )
+      .then((Response) => {
+        console.log(Response.data);
+        setPhotoCount(Response.data.count);
+      })
+      .catch((Error) => {
+        console.log(Error);
+      });
   }, []);
 
   useEffect(() => {
@@ -62,18 +68,11 @@ export const PhotoBooth = () => {
   async function downloadImage(imageSrc: RequestInfo) {
     const image = await fetch(imageSrc);
     const imageBlog = await image.blob();
-    await axios
-      .get(
-        "http://ec2-54-177-242-4.us-west-1.compute.amazonaws.com:5000/api/fileUpload"
-      )
-      .then((Response) => {
-        console.log(Response.data);
-        setPhotoCount(Response.data.count);
-      })
-      .catch((Error) => {
-        console.log(Error);
-      });
-    const blobFile = blobToFile(imageBlog, "photobooth" + (photoCountRef.current + 1) + ".jpg");
+
+    const blobFile = blobToFile(
+      imageBlog,
+      "photobooth" + (Number(photoCountRef.current) + 1) + ".jpg"
+    );
     const formData = new FormData();
     formData.append("file", blobFile);
     await axios({
@@ -85,8 +84,8 @@ export const PhotoBooth = () => {
       },
     }).then((Response) => {
       console.log(Response.data);
-
-      localStorage.setItem("isNew", "False");
+      setPhotoCount(Response.data.count)
+      localStorage.setItem("isNew", "True");
       setIsLoading(false);
     });
 
@@ -103,7 +102,7 @@ export const PhotoBooth = () => {
   const [isCaptureEnable, setCaptureEnable] = useState<boolean>(false);
 
   const webcamRef = useRef<Webcam>(null);
-  const [url, setUrl] = useState<string | null>(null);
+  const [url, setUrl] = useState<string>("");
   const capture = useCallback(() => {
     const imageSrc = webcamRef.current?.getScreenshot();
     if (imageSrc) {
@@ -120,17 +119,14 @@ export const PhotoBooth = () => {
   //     // capture();
   //   }
   // };
-  
+
   useEffect(() => {
     const keyDownHandler = (event: any) => {
       if (event.key === "Enter") {
         if (isLoadingRef.current == true) {
-          const newBoolean = true
           event.preventDefault();
         } else if (isLoadingRef.current === false) {
-          const newBoolean = true
           setIsLoading(true);
-          localStorage.setItem("isNew", "True");
           capture();
         }
       }
@@ -145,36 +141,30 @@ export const PhotoBooth = () => {
 
   return (
     <>
-      {/* <header>
-        <h1>여기보세용</h1>
-        {count.counter}
-      </header> */}
-      <>
-        {isLoading && (
-          <>
-            <div className="loading">
-              <ReactLoading className="loadingBar" type="spin" color="#fff" />
-              asd
-            </div>
-          </>
-        )}
+      {isLoading && (
+        <>
+          <div className="loading">
+            <img className="imgsrc" src={url}></img>
+            <ReactLoading className="loadingBar" type="spin" color="#fff" />
+          </div>
+        </>
+      )}
 
-        <div
-          style={{ overflow: "hidden", width: "100vw", height: "100vh" }}
-          // onKeyDown={consoleLog}
-          // tabIndex={0}
-        >
-          <Webcam
-            mirrored={true}
-            audio={false}
-            width={window.outerWidth}
-            height={window.outerHeight}
-            ref={webcamRef}
-            screenshotFormat="image/jpeg"
-            videoConstraints={videoConstraints}
-          />
-        </div>
-      </>
+      <div
+        style={{ overflow: "hidden", width: "100vw", height: "100vh" }}
+        // onKeyDown={consoleLog}
+        // tabIndex={0}
+      >
+        <Webcam
+          mirrored={true}
+          audio={false}
+          width={window.outerWidth}
+          height={window.outerHeight}
+          ref={webcamRef}
+          screenshotFormat="image/jpeg"
+          videoConstraints={videoConstraints}
+        />
+      </div>
     </>
   );
 };

@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, useEffect } from "react";
+import { useRef, useCallback, useEffect } from "react";
 import Webcam from "react-webcam";
 import "./styles.css";
 import { useDispatch } from "react-redux";
@@ -9,7 +9,9 @@ import rootReducer from "./modules/index";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import "./gallery.css";
+import useState from "react-usestateref";
 
+import ReactLoading from "react-loading";
 const videoConstraints = {
   width: 720,
   height: 360,
@@ -19,14 +21,17 @@ const videoConstraints = {
 export const Gallery = () => {
   const dispatch = useDispatch();
   const [photoCount, setPhotoCount] = useState(0);
+  const [isLoading, setIsLoading, isLoadingRef] = useState(false);
 
   useEffect(() => {
+    setIsLoading(true);
     axios
     .get("http://ec2-54-177-242-4.us-west-1.compute.amazonaws.com:5000/api/fileUpload")
     .then((Response) => {
       console.log(Response.data);
       setResponseArray(Response.data.result.reverse());
       setPhotoCount(Response.data.count)
+      setIsLoading(false);
     })
     .catch((Error) => {
       console.log(Error);
@@ -40,7 +45,7 @@ export const Gallery = () => {
 
   const [isCaptureEnable, setCaptureEnable] = useState<boolean>(false);
   const webcamRef = useRef<Webcam>(null);
-  const [url, setUrl] = useState<string | null>(null);
+  const [url, setUrl] = useState<string>('');
   const capture = useCallback(() => {
     const imageSrc = webcamRef.current?.getScreenshot();
     if (imageSrc) {
@@ -54,6 +59,7 @@ export const Gallery = () => {
     setInterval(() => {
       // const localStorageValue = [{ name: "object2" }]; //JSON.parse(localStorage.getItem("objects"));
       if (localStorage.getItem("isNew") === "True") {
+        setIsLoading(true);
         // getObjectsList(localStorageValue);
         console.log("True");
         localStorage.setItem("isNew", "False");
@@ -64,12 +70,13 @@ export const Gallery = () => {
             console.log(Response.data);
             setResponseArray(Response.data.result.reverse());
             setPhotoCount(Response.data.count)
+            setIsLoading(false);
           })
           .catch((Error) => {
             console.log(Error);
           });
       }
-    }, 600);
+    }, 500);
   }, []);
 
   function importAll(r: any) {
@@ -93,7 +100,15 @@ export const Gallery = () => {
 
   return (
     <>
-    {photoCount}
+    
+    {isLoading && (
+          <>
+            <div className="loading">
+              <ReactLoading className="loadingBar" type="spin" color="#000000" />
+            </div>
+          </>
+        )}
+    {photoCount} 명의 사람들이 함께 수어를 응원하고 있습니다.
     <div className="image-grid">
         {responseArray.map((item) => (
             <img src={item}></img>
